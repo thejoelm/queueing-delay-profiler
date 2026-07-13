@@ -142,12 +142,12 @@ int main() {
                 auto enqueueDelta = chrono::steady_clock::now();
 
                 threadpool.enqueue([clientFd, epollFd, enqueueDelta]() {
+                    //usleep(50000);
                     auto startTime = chrono::steady_clock::now();
                     auto queueDelay = chrono::duration_cast<chrono::microseconds>(startTime - enqueueDelta).count();
                     tls_ring.record(static_cast<uint64_t>(queueDelay));
                     
                     char buffer[1024];
-                    
                     ssize_t bytes_read = recv(clientFd, buffer, sizeof(buffer) - 1, 0);
                     
                     if (bytes_read > 0) {

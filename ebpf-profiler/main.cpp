@@ -22,7 +22,7 @@ int callback(void *ctx, void *data, size_t size) {
 
     ll delta = event->delta_ns;
     deltas.push_back(delta);
-    //cout << "delta " << delta << endl;
+    cout << "delta " << delta << "ns  (" << delta / 1000.0 << " us)" << endl;
     return 0;
 }
 

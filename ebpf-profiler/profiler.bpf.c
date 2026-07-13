@@ -28,10 +28,10 @@ struct {
 SEC("kprobe/tcp_rcv_established")
 int BPF_KPROBE(tcp_rcv_first, struct sock *sk) {
     struct sock_common *skc = (struct sock_common *)sk;
-    __u16 kernel_dport = bpf_ntohs(BPF_CORE_READ(skc, skc_dport));
-    bpf_printk("DEBUG: Received packet on port %d\n", kernel_dport);
+    __u16 local_dport = BPF_CORE_READ(skc, skc_num);
+    bpf_printk("DEBUG: Received packet on port %d\n", local_dport);
     //checking if port connection is 9090
-    if (kernel_dport != 9090) return 0;
+    if (local_dport != 9090) return 0;
 
     u64 time = bpf_ktime_get_ns();
     bpf_map_update_elem(&hm, &sk, &time, BPF_ANY);
@@ -43,11 +43,11 @@ SEC("kprobe/tcp_recvmsg")
 int BPF_KPROBE(tcp_rcv_msg, struct sock *sk) {
     
     struct sock_common *skc = (struct sock_common *)sk;
-    __u16 kernel_dport = bpf_ntohs(BPF_CORE_READ(skc, skc_dport));
-    bpf_printk("DEBUG: Received packet on port %d\n", kernel_dport);
+    __u16 local_dport = BPF_CORE_READ(skc, skc_num);
+    bpf_printk("DEBUG: Received packet on port %d\n", local_dport);
     //checking if port connection is 9090
     
-    if (kernel_dport != 9090) return 0;
+    if (local_dport != 9090) return 0;
 
     __u64* start_time = bpf_map_lookup_elem(&hm, &sk);
     if (start_time != NULL){
